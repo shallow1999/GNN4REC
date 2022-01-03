@@ -1,0 +1,26 @@
+{
+  "gpus": [0, 1, 2],
+  "max_proc_num": 2,
+  "parallel_proc_num": 2,
+  "wait_time": 50,
+  "seed": 1222,
+
+  "params": {
+      "dataset": ["gowalla"],
+      "multicore": [0],
+      "train_batch_size": [2048],
+      "test_batch_size": [1000],
+      "topk": [20],
+      "emb_dim": [64],
+
+      "k": [1, 2, 3, 4],
+      "aggr": ["none"],
+
+      "lr": [0.001],
+      "emb_regular": [1e-4],
+      "param_regular": [0],
+
+      "num_epochs": [1000],
+      "num_runs": [1]
+    }
+}
