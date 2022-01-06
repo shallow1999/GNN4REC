@@ -1,7 +1,7 @@
 from layer.rdagnn_layer import RDAGNNLayer
 import torch.nn as nn
 import torch.nn.functional as F
-from util.other_util import cal_gain
+from util.lt_util import cal_gain
 
 class RDAGNNNet(nn.Module):
     def __init__(self, out_dim, k=2):

@@ -1,17 +1,7 @@
 import torch.nn as nn
 from dgl.nn.pytorch import APPNPConv
 import torch.nn.functional as F
-
-
-# class RAPPNPNet(nn.Module):
-#     def __init__(self, k, alpha):
-#         super(RAPPNPNet, self).__init__()
-#         self.appnp = APPNPConv(k, alpha)
-#
-#     def forward(self, graph, features):
-#         h = self.appnp(graph, features)
-#         return h
-from util.other_util import cal_gain
+from util.lt_util import cal_gain
 
 
 class RAPPNPNet(nn.Module):

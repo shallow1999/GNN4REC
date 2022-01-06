@@ -4,7 +4,7 @@ from torch.nn import Parameter
 import dgl.function as fn
 from torch.nn import functional as F
 
-from util.other_util import cal_gain
+from util.lt_util import cal_gain
 
 
 class RDAGNNLayer(nn.Module):

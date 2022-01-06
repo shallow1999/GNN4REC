@@ -6,7 +6,7 @@ import os
 import itertools
 import multiprocessing
 from multiprocessing import Process
-from train.train import exec_cmds, exec_cmd, parallel_exec_cmds
+from util.lt_util import exec_cmds, exec_cmd, parallel_exec_cmds
 
 ex = Experiment()
 

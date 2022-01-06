@@ -1,8 +1,8 @@
 from sacred import Experiment
 from sacred.observers import MongoObserver
 from train.prepare import Prepare
-from train.train import train, generate_random_seeds, set_random_state, get_free_gpu, log_split, log_metric, \
-    log_rec_metric
+from train.train import train
+from util.lt_util import generate_random_seeds, set_random_state, get_free_gpu, log_split, log_rec_metric
 import torch as th
 from train.test import test
 
