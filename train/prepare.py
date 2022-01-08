@@ -1,10 +1,14 @@
 import torch.nn as nn
 import torch as th
 
-from net.rappnp_net import RAPPNPNet
-from net.rdagnn_net import RDAGNNNet
+from net.appnp_net import APPNPNet
+from net.dagnn_net import DAGNNNet
+from net.gat_net import GATNet
+from net.gcn_net import GCNNet
+from net.gcnii_net import GCNIINet
+from net.sage_net import SAGENet
 from train.dataset import Dataset
-from net.rsgc_net import RSGCNet
+from net.sgc_net import SGCNet
 
 
 class Prepare(object):
@@ -15,7 +19,6 @@ class Prepare(object):
 
         self.graph, self.test_dict, self.dataset = None, None, None
         self.n_users, self.n_items = None, None
-        self.emb_users_ini, self.emb_items_ini, self.emb_features = None, None, None
         self.model, self.optimizer = None, None
 
     def prepare_data(self):
@@ -26,45 +29,88 @@ class Prepare(object):
         self.n_users, self.n_items = dataset.n_users, dataset.n_items
         return graph, test_dict, dataset
 
-    def prepare_embedding(self, n_user, n_item):
-        emb_users_ini = nn.Embedding(num_embeddings=n_user, embedding_dim=self.params["emb_dim"]).to(self.device)
-        emb_items_ini = nn.Embedding(num_embeddings=n_item, embedding_dim=self.params["emb_dim"]).to(self.device)
-
-        nn.init.normal_(emb_users_ini.weight, std=0.1)
-        nn.init.normal_(emb_items_ini.weight, std=0.1)
-
-        self.emb_users_ini, self.emb_items_ini = emb_users_ini, emb_items_ini
-        return emb_users_ini, emb_items_ini
-
-    def prepare_model(self, emb_users_ini, emb_items_ini):
-        if self.model_name == "rsgc":
-            model = RSGCNet(
+    def prepare_model(self):
+        if self.model_name == "sgc":
+            model = SGCNet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
                 k=self.params["k"],
                 aggr=self.params["aggr"]
             )
-        elif self.model_name == "rdagnn":
-            model = RDAGNNNet(
+        elif self.model_name == "dagnn":
+            model = DAGNNNet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
+                hid_dim=self.params["hid_dim"],
                 out_dim=self.params["emb_dim"],
-                k=self.params["k"]
-            )
-        elif self.model_name == "rappnp":
-            model = RAPPNPNet(
                 k=self.params["k"],
-                alpha=self.params["alpha"]
+                dropout=self.params["dropout"]
+            )
+        elif self.model_name == "appnp":
+            model = APPNPNet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
+                hid_dim=self.params["hid_dim"],
+                out_dim=self.params["out_dim"],
+                k=self.params["k"],
+                alpha=self.params["alpha"],
+                dropout=self.params["dropout"]
+            )
+        elif self.model_name == "gcn":
+            model = GCNNet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
+                hid_dim=self.params["hid_dim"],
+                out_dim=self.params["out_dim"],
+                num_layers=self.params["num_layers"]
+            )
+        elif self.model_name == 'gcnii':
+            model = GCNIINet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
+                hid_dim=self.params["hid_dim"],
+                out_dim=self.params["out_dim"],
+                num_layers=self.params["num_layers"],
+                dropout=self.params["dropout"],
+                alpha=self.params["alpha"],
+                lamda=self.params["lamda"]
+            )
+        elif self.model_name == 'sage':
+            model = SAGENet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
+                hid_dim=self.params["hid_dim"],
+                out_dim=self.params["out_dim"],
+                num_layers=self.params["num_layers"],
+                aggregator_type=self.params["aggregator_type"]
+            )
+        elif self.model_name == 'gat':
+            model = GATNet(
+                n_user=self.n_users,
+                n_item=self.n_items,
+                in_dim=self.params["emb_dim"],
+                hid_dim=self.params["hid_dim"],
+                out_dim=self.params["out_dim"],
+                num_heads=self.params["num_heads"],
+                num_layers=self.params["num_layers"],
+                attn_drop=self.params["attn_drop"]
             )
         else:
-            pass
+            raise NotImplementedError(self.model_name)
+
         model = model.to(self.device)
-        optimizer = th.optim.Adam([{"params": model.parameters(), "weight_decay": self.params["param_regular"]},
-                                   {"params": emb_users_ini.parameters()},
-                                   {"params": emb_items_ini.parameters()}],
-                                  lr=self.params["lr"])
+
+        optimizer = th.optim.Adam(model.parameters(), lr=self.params["lr"])
+        print(model)
+        for name, param in model.named_parameters(recurse=True):
+            print(f"name:{name}, param:{param}")
 
         self.model, self.optimizer = model, optimizer
 
         return model, optimizer
-
-    def prepare_features(self, emb_users_ini, emb_items_ini):
-        emb_features = th.cat([emb_users_ini.weight, emb_items_ini.weight])
-        self.emb_features = emb_features
-        return emb_features

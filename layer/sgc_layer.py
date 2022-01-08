@@ -5,13 +5,13 @@ import dgl.function as fn
 from torch.nn import functional as F
 
 
-class RSGCLayer(nn.Module):
+class SGCLayer(nn.Module):
     def __init__(self, k=2, aggr="mean"):
         """
         :param k: propagation stps
         :param agrr: layer agrregate方式，有mean和1/k两种
         """
-        super(RSGCLayer, self).__init__()
+        super(SGCLayer, self).__init__()
         self.k = k
         self.aggr = aggr
 
@@ -38,6 +38,7 @@ class RSGCLayer(nn.Module):
             h = g.ndata.pop('h')
             h = h * norm
             results.append(h)
+
         if self.aggr == "mean":
             H = th.stack(results, dim=1)
             H = th.mean(H, dim=1)
@@ -48,4 +49,5 @@ class RSGCLayer(nn.Module):
                 H = H + emb
         elif self.aggr == "none":
             return results[-1]
+
         return H

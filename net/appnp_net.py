@@ -2,24 +2,28 @@ import torch.nn as nn
 from dgl.nn.pytorch import APPNPConv
 import torch.nn.functional as F
 from util.lt_util import cal_gain
+from net.base_net import BaseNet
 
 
-class RAPPNPNet(nn.Module):
-    def __init__(self, k, alpha):
-        super(RAPPNPNet, self).__init__()
-        self.linear1 = nn.Linear(64, 64)
-        self.linear2 = nn.Linear(64, 64)
+class APPNPNet(BaseNet):
+    def __init__(self, n_user, n_item, in_dim, hid_dim, out_dim, k, alpha, dropout=0):
+        super(APPNPNet, self).__init__(n_user, n_item, in_dim)
+        self.linear1 = nn.Linear(in_dim, hid_dim)
+        self.linear2 = nn.Linear(hid_dim, out_dim)
         self.activation = F.relu
-        self.dropout = 0
+        self.dropout = dropout
         self.rappnp = APPNPConv(k, alpha)
+        self.reset_parameters()
 
     def reset_parameters(self):
         gain = cal_gain(self.activation)
+
         nn.init.xavier_uniform_(self.linear1.weight, gain=gain)
         if self.linear1.bias is not None:
-            nn.init.zeros_(self.linear2.bias)
-        nn.init.xavier_uniform_(self.linear1.weight)
-        if self.linear1.bias is not None:
+            nn.init.zeros_(self.linear1.bias)
+
+        nn.init.xavier_uniform_(self.linear2.weight)
+        if self.linear2.bias is not None:
             nn.init.zeros_(self.linear2.bias)
 
     def forward(self, graph, features):
@@ -28,4 +32,5 @@ class RAPPNPNet(nn.Module):
         h = F.dropout(h, self.dropout, training=self.training)
         h = self.linear2(h)
         h = self.rappnp(graph, h)
+
         return h

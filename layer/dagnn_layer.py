@@ -7,9 +7,9 @@ from torch.nn import functional as F
 from util.lt_util import cal_gain
 
 
-class RDAGNNLayer(nn.Module):
+class DAGNNLayer(nn.Module):
     def __init__(self, out_dim, k=2):
-        super(RDAGNNLayer, self).__init__()
+        super(DAGNNLayer, self).__init__()
         self.s = Parameter(th.FloatTensor(out_dim, 1))
         self.k = k
         self.reset_parameters()
@@ -41,8 +41,10 @@ class RDAGNNLayer(nn.Module):
             h = g.ndata.pop('h')
             h = h * norm
             results.append(h)
+
         H = th.stack(results, dim=1)
         S = F.sigmoid(th.matmul(H, self.s))
         S = S.permute(0, 2, 1)
         H = th.matmul(S, H).squeeze()
+
         return H

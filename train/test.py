@@ -4,14 +4,14 @@ from train.loss import BPRLoss
 from util.data_util import uniform_sample
 import torch as th
 from util.data_util import shuffle, minibatch
-from util.emb_util import get_emb_out, split_emb_out, get_emb_ini, compute_rating, tran_one_zero
 from train.metric import recall_and_precis_atk, ndgc_atk
+import numpy as np
+from net.base_net import BaseNet
 
 
-# 后面加个full batch GPU版本的
+# TODO 后面加个full batch GPU Torch版本的，现在评估指标是在CPU上用numpy计算的，效率太低
 def test(prepare, test_batch_size):
     graph, test_dict, dataset = prepare.graph, prepare.test_dict, prepare.dataset
-    emb_users_ini, emb_items_ini, emb_features = prepare.emb_users_ini, prepare.emb_items_ini, prepare.emb_features
     model, optimizer = prepare.model, prepare.optimizer
     topk = prepare.params["topk"]
 
@@ -24,14 +24,21 @@ def test(prepare, test_batch_size):
     with th.no_grad():
         test_users = list(test_dict.keys())
         recall, precis, ndcg = 0., 0., 0.
+
+        # 前向传播一次即可
+        emb_features = model.get_features()
+        emb_out = model(graph, emb_features)
+        emb_users_out, emb_items_out = model.split_emb_out(emb_out)
+
         for batch_users in minibatch(test_batch_size, test_users):
             all_pos = dataset.get_user_pos_items(batch_users)
             batch_labels = [test_dict[u] for u in batch_users]
             batch_users = th.Tensor(batch_users).long().to(prepare.device)
 
-            emb_out = model(graph, emb_features)
-            emb_users_out, emb_items_out = split_emb_out(prepare.n_users, prepare.n_items, emb_out)
-            rating = compute_rating(batch_users, emb_users_out, emb_items_out)
+            # emb_out = model(graph, emb_features)
+            # emb_users_out, emb_items_out = split_emb_out(prepare.n_users, prepare.n_items, emb_out)
+
+            rating = model.compute_rating(batch_users, emb_users_out, emb_items_out)
 
             exc_idxs, exc_items = [], []
             for i, items in enumerate(all_pos):
@@ -82,3 +89,12 @@ def test_one_batch(labels_and_preds):
         "ndcg": ndcg
     }
     return result
+
+
+def tran_one_zero(labels, pred):
+    result = []
+    for i in range(len(labels)):
+        tran = list(map(lambda x: x in labels[i], pred[i]))
+        tran = np.array(tran).astype("float")
+        result.append(tran)
+    return np.array(result).astype("float")

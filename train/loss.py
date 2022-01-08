@@ -15,7 +15,7 @@ def BPRLoss(emb_regular, emb_part_users_out, emb_pos_out, emb_neg_out,
     neg_score = th.sum(neg_score, dim=1)
 
     loss = th.mean(F.softplus(neg_score - pos_score))
-    # ？加在这里和加在adam优化器里有啥区别呢
+    # 这里实际上只对Embedding进行了正则化，对于模型参数并没有进行正则化
     bpr_loss = loss + emb_regular * reg_loss
 
     return bpr_loss

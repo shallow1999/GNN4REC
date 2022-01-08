@@ -1,5 +1,6 @@
 import os
 import time
+from pprint import pprint
 from subprocess import Popen, DEVNULL
 from multiprocessing import Process
 import pynvml
@@ -28,6 +29,14 @@ def cal_gain(fun, param=None):
     if fun is F.leaky_relu:
         gain = nn.init.calculate_gain('leaky_relu', param)
     return gain
+
+
+class Identity(nn.Module):
+    def __init__(self):
+        super(Identity, self).__init__()
+
+    def forward(self, x):
+        return x
 
 
 def log_metric(epoch, degree, **metric):
@@ -75,9 +84,9 @@ def log_rec_metric(ex: Experiment, epoch, degree, metric):
 
 def log_split(content="-" * 10, n=30):
     """
-    输出分割线
+    输出分割线，content会居中显示，例如 --------------------------------run 1-------------------------------
     :param content:分割线中的内容
-    :param n:分割线'-'重复多少次
+    :param n:分割线'-'左右各重复多少次
     :return:
     """
     print("\n{} {} {}\n".format("-" * n, content, "-" * n))
@@ -186,11 +195,11 @@ def parallel_exec_cmds(parallel_proc_num, wait_time, cmds):
     gap = int(len(cmds) / parallel_proc_num + 0.5)
     # 将总的cmds划分为一系列<=parallel_proc_num的子集
     for i in range(parallel_proc_num):
-        start, end = i * gap, min(len(cmds), (i+1)*gap)
+        start, end = i * gap, min(len(cmds), (i + 1) * gap)
         if start >= len(cmds):
             break
         batch_cmds = cmds[start:end]
-        procs.append(Process(target=exec_cmds, args=(batch_cmds, )))
+        procs.append(Process(target=exec_cmds, args=(batch_cmds,)))
     for proc in procs:
         proc.start()
         time.sleep(wait_time)
