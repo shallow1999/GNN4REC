@@ -1,5 +1,5 @@
 {
-    "gpus": [0, 1, 2, 3],
+    "gpus": [3],
     "max_proc_num": 1,
     "parallel_proc_num": 1,
     "wait_time": 0,
@@ -17,6 +17,7 @@
         "k": 3,
         "alpha": 0.1,
         "dropout": 0,
+        "edge_drop": 0,
 
         "lr": 0.001,
         "emb_regular": 1e-4,

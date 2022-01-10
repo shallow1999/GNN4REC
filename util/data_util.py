@@ -1,8 +1,27 @@
 import numpy as np
 from train.dataset import Dataset
 
+try:
+    from cppimport import imp_from_filepath
+    from os.path import join, dirname
+    sampling = imp_from_filepath("util/sampling.cpp")
+    sampling.seed(1222)
+    cpp_env = True
+    print("cpp extension is available")
+except:
+    cpp_env = False
+    print("cpp extension not available")
+
 
 def uniform_sample(dataset: Dataset):
+    if cpp_env:
+        return uniform_sample_fast(dataset)
+    else:
+        return uniform_sample_slow(dataset)
+
+
+def uniform_sample_slow(dataset: Dataset):
+
     n_users, n_relation, n_items, all_pos = dataset.n_users, dataset.train_data_size, dataset.n_items, dataset.all_pos
     sample_users = np.random.randint(0, n_users, n_relation)
     sample_result = []
@@ -20,6 +39,11 @@ def uniform_sample(dataset: Dataset):
                 break
         sample_result.append([user, pos_item, neg_item])
     return np.array(sample_result)
+
+
+def uniform_sample_fast(dataset: Dataset, neg_ratio=1):
+    return sampling.sample_negative(dataset.n_users, dataset.n_items, dataset.train_data_size,
+                                    dataset.all_pos, neg_ratio)
 
 
 # ？原作者是在to(device)之后shuffle的呀，会不会有什么影响，后续改进一下

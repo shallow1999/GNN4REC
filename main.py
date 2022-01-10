@@ -41,9 +41,8 @@ def base_config():
 
 @ex.automain
 def main(gpus, max_proc_num, seed, model_name, params):
-    print("model: {}".format(model_name))
+    log_split('params info')
     pprint(params)  # TODO 可选代码，输出参数
-
     device = get_free_gpu(gpus, max_proc_num)  # TODO 固定代码
 
     prepare = Prepare(device, params, model_name)
@@ -63,11 +62,11 @@ def main(gpus, max_proc_num, seed, model_name, params):
 
         counter = 0
         best_score = 0
+        best_metric = None
 
         for epoch in range(1, params['num_epochs'] + 1):
 
             avg_loss = train(prepare, params["train_batch_size"], params["emb_regular"])
-
             log_rec_metric(ex, epoch, 4, {"avg_loss": avg_loss})  # TODO 可选代码，记录每个epoch的结果数据
 
             if epoch % 10 == 0:
@@ -77,14 +76,23 @@ def main(gpus, max_proc_num, seed, model_name, params):
                           "recall": recall,
                           "ndcg": ndcg
                           }
-
                 log_rec_metric(ex, epoch, 4, metric)  # TODO 可选代码，记录每个epoch的结果数据
 
                 # 临时的early stopping，后面有时间加上验证集，现在就算了，不想搞了
                 if recall > best_score:
                     best_score = recall
+                    best_metric = metric
                     counter = 0
                 else:
                     counter += 1
                 if counter >= 10:
                     break
+
+        result = ""
+        for k, v in best_metric.items():
+            result = result + "{}: {:.5f} | ".format(k, v)
+        result.strip()
+
+        return result
+
+

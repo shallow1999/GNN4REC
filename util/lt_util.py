@@ -130,12 +130,12 @@ def get_gpu_proc_num(gpu=0):
     return len(process)
 
 
-def get_free_gpu(gpus=[0], max_proc_num=2, max_wait=3600):
+def get_free_gpu(gpus=[0], max_proc_num=2, max_wait=28800):
     """
     获取空闲的GPU集合
     :param gpus: 待检查的GPU集合
     :param max_proc_num: 一个GPU上最多可运行的进程数量
-    :param max_wait: 当前没有空闲GPU时最大等待时间，超过该事件后抛出一个异常
+    :param max_wait: 当前没有空闲GPU时最大等待时间，超过该事件后抛出一个异常，默认等待8个小时
     :return:
     """
     if th.cuda.is_available():
@@ -146,7 +146,9 @@ def get_free_gpu(gpus=[0], max_proc_num=2, max_wait=3600):
                 for gpu in gpus:
                     if get_gpu_proc_num(gpu) == i:
                         return gpu
-            time.sleep(10)
+            print("Sleep a while for next find")
+            time.sleep(300)
+            print("Try to find free gpu again")
             waited += 10
             if waited > max_wait:
                 raise Exception("There is no free gpu.")

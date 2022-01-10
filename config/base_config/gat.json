@@ -1,6 +1,6 @@
 {
     "gpus": [0, 1, 2, 3],
-    "max_proc_num": 1,
+    "max_proc_num": 2,
     "parallel_proc_num": 1,
     "wait_time": 0,
     "seed": 1222,
@@ -16,7 +16,9 @@
         "out_dim": 64,
         "num_heads": 2,
         "num_layers": 3,
-        "attn_drop": 0,
+        "feat_drop": 0,
+        "attn_drop": 0.5,
+        "residual": true,
 
 
         "lr": 0.001,

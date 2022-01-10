@@ -29,14 +29,6 @@ def train(prepare, train_batch_size, emb_regular):
         emb_features = model.get_features()
         emb_out = model(graph, emb_features)
 
-        # log_split(f"emb_features {i}", 30)
-        # print(emb_features[batch_users[0]][:10])
-        # print(emb_features[1][:10])
-        #
-        # log_split(f"emb_users_ini {i}", 30)
-        # print(model.emb_users_ini.weight[batch_users[0]][:10])
-        # print(model.emb_users_ini.weight[1][:10])
-
         emb_users_out, emb_items_out = model.split_emb_out(emb_out)
         emb_part_users_out, emb_pos_out, emb_neg_out = model.get_emb_out(batch_users, batch_pos, batch_neg,
                                                                          emb_users_out, emb_items_out)
@@ -50,14 +42,6 @@ def train(prepare, train_batch_size, emb_regular):
         optimizer.step()
 
         avg_loss += loss
-
-        # log_split(f"emb_features_2 {i}", 30)
-        # print(emb_features[batch_users[0]][:10])
-        # print(emb_features[1][:10])
-        #
-        # log_split(f"emb_users_ini_2 {i}", 30)
-        # print(model.emb_users_ini.weight[batch_users[0]][:10])
-        # print(model.emb_users_ini.weight[1][:10])
 
     avg_loss /= n_batch
     return avg_loss.item()

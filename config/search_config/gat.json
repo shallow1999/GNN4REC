@@ -1,7 +1,7 @@
 {
-    "gpus": [3],
-    "max_proc_num": 1,
-    "parallel_proc_num": 1,
+    "gpus": [0, 1, 2, 3],
+    "max_proc_num": 2,
+    "parallel_proc_num": 6,
     "wait_time": 50,
     "seed": 1222,
     "params": {
@@ -14,11 +14,14 @@
 
         "hid_dim": [64],
         "out_dim": [64],
-        "num_layers": [3],
-        "aggregator_type": ["mean", "pool", "lstm"],
+        "num_heads": [1, 2],
+        "num_layers": [1, 2, 3],
+        "feat_drop": [0, 0.5],
+        "attn_drop": [0, 0.5],
+        "residual": [false, true],
 
-        "lr": [0.001],
-        "emb_regular": [1e-4],
+        "lr": [0.01, 0.001],
+        "emb_regular": [1e-3, 1e-4],
         "param_regular": [0],
         "num_epochs": [1000],
         "num_runs": [1]

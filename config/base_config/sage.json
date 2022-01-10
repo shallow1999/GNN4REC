@@ -14,13 +14,13 @@
 
         "hid_dim": 64,
         "out_dim": 64,
-        "num_layers": 3,
+        "num_layers": 2,
         "aggregator_type": "mean",
 
         "lr": 0.001,
         "emb_regular": 1e-4,
         "param_regular": 0,
-        "num_epochs": 1000,
+        "num_epochs": 10,
         "num_runs": 1
     }
 }

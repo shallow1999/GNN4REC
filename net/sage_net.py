@@ -5,8 +5,8 @@ from net.base_net import BaseNet
 
 
 class SAGENet(BaseNet):
-    def __init__(self, n_user, n_item, in_dim, hid_dim, out_dim, num_layers, aggregator_type, feat_drop=0.0, bias=True, norm=None,
-                 activation=F.relu):
+    def __init__(self, n_user, n_item, in_dim, hid_dim, out_dim, num_layers, aggregator_type, feat_drop=0.0, bias=True,
+                 norm=None, activation=F.relu):
         super(SAGENet, self).__init__(n_user, n_item, in_dim)
         self.sage = nn.ModuleList()
 

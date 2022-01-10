@@ -1,6 +1,6 @@
 {
     "gpus": [0, 1, 2, 3],
-    "max_proc_num": 1,
+    "max_proc_num": 2,
     "parallel_proc_num": 1,
     "wait_time": 0,
     "seed": 1222,
@@ -12,8 +12,9 @@
         "topk": 20,
         "emb_dim": 64,
 
-        "k": 3,
-        "aggr": "mean",
+        "k": 1,
+        "neigh_aggr": "degree",
+        "layer_aggr": "1/k",
 
         "lr": 0.001,
         "emb_regular": 1e-4,

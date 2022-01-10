@@ -62,6 +62,7 @@ def main(gpus, max_proc_num, parallel_proc_num, wait_time, seed,
 
     elif tags == "best":
         cmds = []
+        print(params.values())
         for p in params.values():
             cmd = templete.format(prefix, p, suffix)
             cmds.append(cmd)
@@ -71,7 +72,7 @@ def main(gpus, max_proc_num, parallel_proc_num, wait_time, seed,
 
     elif tags in ["search", "analyze"]:
         keys = list(params.keys())
-        values = list(params.values())
+
         p = {}
         cmds = []
         n = len(keys)

@@ -1,6 +1,6 @@
 {
     "gpus": [0, 1, 2, 3],
-    "max_proc_num":1,
+    "max_proc_num": 1,
     "parallel_proc_num": 2,
     "wait_time": 60,
     "seed": 1222,
@@ -14,9 +14,12 @@
             "topk": 20,
             "emb_dim": 64,
 
-            "k": 3,
-            "neigh_aggr": "degree",
-            "layer_aggr": "mean",
+            "hid_dim": 64,
+            "out_dim": 64,
+            "k": 2,
+            "alpha": 0.1,
+            "dropout": 0,
+            "edge_drop": 0,
 
             "lr": 0.001,
             "emb_regular": 1e-4,
@@ -33,9 +36,12 @@
             "topk": 20,
             "emb_dim": 64,
 
-            "k": 3,
-            "neigh_aggr": "degree",
-            "layer_aggr": "mean",
+            "hid_dim": 64,
+            "out_dim": 64,
+            "k": 2,
+            "alpha": 0.1,
+            "dropout": 0,
+            "edge_drop": 0,
 
             "lr": 0.001,
             "emb_regular": 1e-4,

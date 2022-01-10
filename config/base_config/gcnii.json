@@ -1,5 +1,5 @@
 {
-    "gpus": [0, 1, 2, 3],
+    "gpus": [1],
     "max_proc_num": 1,
     "parallel_proc_num": 1,
     "wait_time": 0,
